@@ -31,15 +31,15 @@ Built for the Sportradar VIBE Coding Exercise.
 | `fetch_sports_data` | Sportradar NBA API gateway | Direct NBA v8 HTTP calls, response trimming, 5-min caching, rate limiting |
 | `compare_entities` | Multi-entity comparison | Radar/bar/histogram chart data generation, comparison tables with winner detection |
 | `search_history` | BM25-ranked session history search | SQLite FTS5 keyword search over the user's prior queries to recall preferences and context |
-| `generate_excel` | Excel export | Generates a downloadable .xls file from the latest table output, triggering a browser download |
+| `generate_excel` | CSV export | Generates a downloadable CSV file from the latest table output (opens in Excel, Google Sheets, etc.) |
 
 ## Client-Side Actions (4 actions)
 
 | Action | Trigger | Observable behavior |
 |--------|---------|-------------------|
-| `render_chart` | Player/team comparison | Radar, bar, histogram, scatter, pie, or line/area chart appears in Results panel |
-| `render_table` | Stats comparison | Data table with winner highlighting |
-| `download_file` | Excel export request | Browser triggers .xls file download |
+| `render_chart` | Player/team comparison | Radar, bar, histogram, scatter, pie, gaussian, or line/area chart renders inline in the conversation |
+| `render_table` | Stats comparison | Data table with winner highlighting renders inline in the conversation |
+| `download_file` | CSV export request | Download button appears in chat; click triggers browser CSV download |
 | `show_toast` | Notable agent events | Toast notification appears |
 
 ## Knowledge Mechanism
@@ -105,12 +105,12 @@ FastAPI Backend
       |
 REACT AGENT (Claude Sonnet 4.6 with tool_use)
   1. Generates visible plan (text)
-  2. Calls tools (max 2 rounds, 8 calls)
+  2. Calls tools (up to 8 rounds, 8 tool calls max)
   3. Streams results via SSE
       |
   plan_step | tool_call | tool_result | client_action | knowledge_used | final_response
       |
-React Frontend (3-panel UI: Chat | Trace | Results)
+React Frontend (2-panel UI: Chat + collapsible Trace sidebar; charts/tables render inline)
 ```
 
 ## Web Proof
@@ -119,7 +119,7 @@ Evidence of real client-server interaction:
 
 1. **Network tab** — POST `/api/chat` returns SSE stream with `event: tool_call`, `event: tool_result`, `event: client_action` events
 2. **Server execution** — `fetch_sports_data` makes real HTTP calls to `api.sportradar.com/nba/trial/v8/en/` with rate limiting and retry logic; `query_players` filters a 500+ player local dataset via pandas with zero outbound requests
-3. **UI mutation** — `client_action: render_chart` causes a Recharts radar/bar/histogram chart to appear; `client_action: download_file` triggers a browser .xls file download
+3. **UI mutation** — `client_action: render_chart` causes a Recharts radar/bar/histogram chart to render inline; `client_action: download_file` surfaces a download button that triggers a browser CSV download
 4. **Knowledge recall** — `event: knowledge_used` fires when `search_history` returns prior-query matches; the Trace panel shows a "Knowledge Active" badge with the matched queries
 
 ## Tradeoffs + Next Steps
@@ -145,12 +145,12 @@ Evidence of real client-server interaction:
 | Layer | Technology | Version |
 |-------|-----------|---------|
 | LLM | Claude Sonnet 4.6 | `claude-sonnet-4-6` |
-| Backend | FastAPI | 0.132.0 |
+| Backend | FastAPI | 0.135.1 |
 | Frontend | React + Vite | React 18, Vite 6 |
 | Styling | Tailwind CSS | v4 |
 | Charts | Recharts | 2.15 |
 | Animations | Framer Motion | 12.x |
 | Database | SQLite (aiosqlite) | 0.20 |
-| API Client | Anthropic Python SDK | 0.83.0 |
+| API Client | Anthropic Python SDK | 0.84.0 |
 | Sports Data | Sportradar NBA API | v8 |
 | Streaming | SSE (sse-starlette) | 2.2.1 |
