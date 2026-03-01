@@ -1,0 +1,10 @@
+fastapi==0.135.1
+uvicorn[standard]==0.34.0
+httpx==0.28.1
+anthropic==0.84.0
+pydantic==2.12.5
+python-dotenv==1.0.1
+aiosqlite==0.20.0
+sse-starlette==2.2.1
+pandas>=2.2.0
+thefuzz>=0.22.1

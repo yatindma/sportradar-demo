@@ -1,0 +1,29 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "SportScout AI - NBA Analytics Agent"
+authors = [
+    {name = "", email = ""},
+]
+dependencies = [
+    "fastapi==0.132.0",
+    "uvicorn[standard]==0.34.0",
+    "httpx==0.28.1",
+    "anthropic==0.83.0",
+    "pydantic==2.10.4",
+    "python-dotenv==1.0.1",
+    "aiosqlite==0.20.0",
+    "sse-starlette==2.2.1",
+    "thefuzz>=0.22.1",
+    "pandas>=2.2.0",
+]
+requires-python = "==3.11.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm.scripts]
+dev = "uvicorn main:app --reload --port 8000"
+
+[tool.pdm]
+distribution = false
